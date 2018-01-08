@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!--扫描器-->
+    <context:component-scan base-package="com.cx.controller"/>
+    <!--dataSource-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@//192.168.56.101:1521/orcl"/>
+        <property name="username" value="xixi"/>
+        <property name="password" value="123"/>
+    </bean>
+    <!--sqlSessionFactory-->
+    <bean name="sqlSessionFactory" id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!---->
+        <property name="configurationProperties">
+            <props>
+                <prop key="com.cx.dao">
+                </prop>
+            </props>
+        </property>
+    </bean>
+    <!--transactionManager-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!--sqlMapper-->
+    <bean id="configure" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.cx.dao"/>
+        <property name="beanName" value="sqlSessionFactory"/>
+    </bean>
+    <!--userService-->
+    <bean id="userServiceImp" class="com.cx.service.UserServiceImp"/>
+
+    <!--userController-->
+    <bean id="userController" class="com.cx.controller.UserController"/>
+</beans>
